@@ -3,3 +3,4 @@
 *.suo
 backend/API/bin
 backend/API/obj
+backend/.vs
