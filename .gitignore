@@ -1,0 +1,5 @@
+*.v2
+*.v1
+*.suo
+backend/API/bin
+backend/API/obj
