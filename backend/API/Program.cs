@@ -1,3 +1,5 @@
+using SupportBackend;
+
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
@@ -21,6 +23,13 @@ builder.Services.AddCors(options =>
 
 var app = builder.Build();
 
+var webSocketOptions = new WebSocketOptions()
+{
+    KeepAliveInterval = TimeSpan.FromSeconds(120),
+};
+
+app.UseWebSockets(webSocketOptions);
+
 // Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())
 {
@@ -35,5 +44,8 @@ app.UseCors("CORSPolicy");
 app.UseAuthorization();
 
 app.MapControllers();
+
+// запуск чтения сообщений из мессенджеров
+VkMessenger.GetInstance().StartHandlingMessages();
 
 app.Run();
