@@ -98,7 +98,7 @@
         var socket;
 
         var scheme = document.location.protocol === "https:" ? "wss" : "ws";
-        var port = document.location.port ? (":" + document.location.port) : "";
+        var port = ":7074";
 
         connectionUrl.value = scheme + "://" + document.location.hostname + port + "/ws?messengerType=Vk&messengerUserId=141576988" ;
 
@@ -158,12 +158,22 @@
             if (!socket || socket.readyState !== WebSocket.OPEN) {
                 alert("socket not connected");
             }
-            var data = sendMessage.value;
-            socket.send(data);
+
+            let msgObj = {
+                Text: sendMessage.value,
+                UserId: '141576988',
+                MessengerType: 'Vk',
+                MessageType: 'New',
+                MessageDirection: 'Messenger',
+                Attachments: []
+            };
+            msgStr = JSON.stringify(msgObj);
+
+            socket.send(msgStr);
             commsLog.innerHTML += '<tr>' +
                 '<td class="commslog-client">Client</td>' +
                 '<td class="commslog-server">Server</td>' +
-                '<td class="commslog-data">' + htmlEscape(data) + '</td></tr>';
+                '<td class="commslog-data">' + htmlEscape(msgStr) + '</td></tr>';
         };
 
         connectButton.onclick = function() {

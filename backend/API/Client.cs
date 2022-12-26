@@ -31,27 +31,11 @@ namespace SupportBackend
         // ожидание сообщения из веб-клиента
         public async Task<Message> WaitForNewMessageAsync()
         {
-            // TODO : подумать над размером буфера
+            // TODO : подумать над размером буфера (унести в конфиг?)
             byte[] buffer = new byte[1024 * 4];
-            await webSocket.ReceiveAsync(new ArraySegment<byte>(buffer), CancellationToken.None);
+            WebSocketReceiveResult recieved = await webSocket.ReceiveAsync(new ArraySegment<byte>(buffer), CancellationToken.None);
 
-            // отсеиваем нулевые символы
-            int bytesCnt = 0;
-            for (int i = 0; i < buffer.Length; i++)
-            {
-                if (buffer[i] == 0)
-                {
-                    break;
-                }
-                bytesCnt++;
-            }
-            byte[] msgBuffer = new byte[bytesCnt];
-            for (int i = 0; i < bytesCnt; i++)
-            {
-                msgBuffer[i] = buffer[i];
-            }
-
-            string msgText = Encoding.UTF8.GetString(msgBuffer);
+            string msgText = Encoding.UTF8.GetString(buffer, 0, recieved.Count);
 
             Logger.Info(
                 string.Format("Новое сообщение от оператора для пользователя {0}:\n{1}", GetKey(), msgText),

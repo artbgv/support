@@ -1,5 +1,4 @@
-﻿using System.Collections.Generic;
-using Newtonsoft.Json;
+﻿using Newtonsoft.Json;
 using Newtonsoft.Json.Converters;
 
 namespace SupportBackend
@@ -89,15 +88,12 @@ namespace SupportBackend
             {
                 msg = JsonConvert.DeserializeObject<Message>(json);
             }
-            catch (System.Exception e)
+            catch (Exception e)
             {
-                msg = new Message();
-                msg.valid = false;
+                var errMsg = string.Format("Произошла ошибка при разборе сообщения из JSON:\n{0}\n{1}", json, e.Message);
+                Logger.Error(errMsg,"Message.ParseJson");
 
-                Logger.Error(
-                    string.Format("Произошла ошибка при разборе сообщения из JSON:\n{0}\n{1}", json, e.Message),
-                    "Message.ParseJson"
-                );
+                throw new InvalidClientMessageException(errMsg);
             }
 
             return msg;

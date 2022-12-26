@@ -9,4 +9,9 @@
     {
         public InvalidVkMessageException(string message) : base(message) { }
     }
+
+    public class InvalidClientMessageException : Exception
+    {
+        public InvalidClientMessageException(string message) : base(message) { }
+    }
 }

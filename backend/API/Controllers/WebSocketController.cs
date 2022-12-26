@@ -54,7 +54,7 @@ namespace SupportBackend.Controllers
         }
 
         // получение обработчика для нужного мессенджера
-        private IMessenger GetMessengerInstance(string messengerType)
+        private static IMessenger GetMessengerInstance(string messengerType)
         {
             if (messengerType == "Vk")
             {
@@ -69,13 +69,24 @@ namespace SupportBackend.Controllers
         {
             while (client.IsConnected())
             {
-                // ожидаем сообщение от оператора из веб-клиента
-                Message message = await client.WaitForNewMessageAsync();
-
-                // отправляем в мессенджер
-                if (message.IsValid())
+                try
                 {
+                    // ожидаем сообщение от оператора из веб-клиента
+                    Message message = await client.WaitForNewMessageAsync();
+
+                    // отправляем в мессенджер
                     messenger.Send(message);
+                }
+                catch (InvalidClientMessageException)
+                {
+                    // TODO : возможно, обравать соединение при большом количестве инвалидных сообщений
+                }
+                catch (Exception e)
+                {
+                    Logger.Error(
+                        string.Format("Непредвиденная ошибка при получении сообщения от оператора:\n{0}", e.Message), 
+                        "WebSocketController.HandleClientMessages"
+                    );
                 }
             }
         }
